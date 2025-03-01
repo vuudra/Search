@@ -1,24 +1,5 @@
+# wrangler.toml
 name = "vuudra-search"
-main = ".vinxi/build/server/_server/server.js"
-compatibility_date = "2023-12-01"
-
-[build]
-command = "npm run build"
-watch_dir = "src"
-
-[site]
-bucket = ".vinxi/build/client/_build"
-
-[env.production]
-name = "vuudra-search"
-route = ""
-
-[env.staging]
-name = "vuudra-search-staging"
-
-[triggers]
-crons = []
-
-[vars]
-# Environment variables to be set
-# EXAMPLE_VAR = "example_value"
+pages_build_output_dir = "./dist"
+compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2024-11-13"
