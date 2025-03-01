@@ -4,8 +4,7 @@ import tsConfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   server: {
-    preset: "cloudflare-pages",
-    unenv: cloudflare
+    preset: "netlify",
   },
   vite: {
     plugins: [
