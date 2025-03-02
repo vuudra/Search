@@ -25,13 +25,17 @@ jobs:
           deno-version: v1.x
 
       - name: Install
-        run: "npm install"
+        run: "deno install --allow-scripts"
 
       - name: Build
-        run: "npm run build"
+        run: "deno run build"
+
+      - name: Bundle for Bunny
+        run: |
+          deno bundle .output/server/index.mjs .output/server/bundled.mjs
 
       - name: Publish the script to Bunny
         uses: "BunnyWay/actions/deploy-script@main"
         with:
           script_id: 20616
-          file: ".output/server/index.mjs"
+          file: ".output/server/bundled.mjs"
