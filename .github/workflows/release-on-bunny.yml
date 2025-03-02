@@ -25,10 +25,10 @@ jobs:
           deno-version: v1.x
 
       - name: Install
-        run: "deno install --allow-scripts"
+        run: "npm install"
 
       - name: Build
-        run: "deno run build"
+        run: "npm run build"
 
       - name: Bundle for Bunny
         run: |
