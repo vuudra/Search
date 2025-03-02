@@ -1,4 +1,3 @@
-
 name: Deploy Bunny Scripting Script
 
 on:
@@ -19,7 +18,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: "22"
 
       - uses: denoland/setup-deno@v1
         with:
@@ -35,4 +34,4 @@ jobs:
         uses: "BunnyWay/actions/deploy-script@main"
         with:
           script_id: 20616
-          file: "npm install"
+          file: ".output/server/index.mjs"
