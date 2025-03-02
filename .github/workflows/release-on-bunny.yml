@@ -34,4 +34,4 @@ jobs:
         uses: "BunnyWay/actions/deploy-script@main"
         with:
           script_id: 20616
-          file: ".output/server/index.mjs"
+          file: "node .output/server/index.mjs"
