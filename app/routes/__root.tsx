@@ -72,7 +72,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <hr />
         {children}
-        <TanStackRouterDevtools position="bottom-right" />
         <Scripts />
       </body>
     </html>
