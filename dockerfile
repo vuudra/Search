@@ -1,17 +1,17 @@
-# Use Node.js LTS version as the base image
-FROM node:20-alpine
+# Use Bun as the base image
+FROM oven/bun:1
 
 # Create app directory
 WORKDIR /usr/src/app
 
 # Create a non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN addgroup --system appgroup && adduser --system appuser --ingroup appgroup
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies (clean install)
+RUN rm -f package-lock.json && bun install --production
 
 # Copy app source
 COPY . .
@@ -26,4 +26,4 @@ USER appuser
 EXPOSE 3000
 
 # Start the application
-CMD ["npm", "start"]
+CMD ["bun", "start"]
