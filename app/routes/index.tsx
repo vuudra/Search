@@ -24,7 +24,7 @@ function searchIt(search: string) {
 
   let searchUrl = selectedBang?.u?.replace(
     "{{{s}}}",
-    encodeURIComponent(clean).replace(/%2F/g, "/")
+    encodeURIComponent(clean).replace(/%20/g, "+").replace(/%2F/g, "/")
   );
 
   if (selectedBang && searchUrl) {
