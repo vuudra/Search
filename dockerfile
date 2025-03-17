@@ -1,42 +1,45 @@
-# Use Bun as the base image for building
-FROM oven/bun:1 as builder
+# Build stage with Bun
+FROM oven/bun:latest AS builder
 
-# Create app directory
-WORKDIR /usr/src/app
+# Set working directory
+WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package.json and other config files
+COPY package.json tsconfig.json app.config.ts postcss.config.mjs ./
 
-# Install all dependencies (including dev dependencies for build)
-RUN rm -f package-lock.json && bun install
+# Copy source code
+COPY app ./app
 
-# Copy app source
-COPY . .
+# Install dependencies
+RUN bun install
 
 # Build the application
 RUN bun run build
 
-# Production image
-FROM node:20-slim
+# Debug: List directories to see what was created
+RUN ls -la && ls -la .output || echo "No .output directory"
 
-WORKDIR /usr/src/app
+# Production stage with Node.js
+FROM node:20-slim AS runner
 
-# Create a non-root user
-RUN groupadd --system appgroup && useradd --system --gid appgroup appuser
+WORKDIR /app
 
-# Copy built assets and dependencies from builder
-COPY --from=builder /usr/src/app/.output ./
-COPY --from=builder /usr/src/app/package.json ./
-COPY --from=builder /usr/src/app/node_modules ./node_modules
+# Copy built files
+COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/.vinxi ./.vinxi
+COPY --from=builder /app/package.json ./package.json
 
-# Change ownership of the app directory to the non-root user
-RUN chown -R appuser:appgroup /usr/src/app
+# Install production dependencies using npm
+RUN npm install
 
-# Switch to non-root user
-USER appuser
+# Install explicit react-dom
+RUN npm install react-dom@19
 
-# Expose the port the app runs on
+# Set environment variables
+ENV NODE_ENV=production
+
+# Expose the port your app runs on
 EXPOSE 3000
 
 # Start the application
-CMD ["node", "server/index.mjs"]
+CMD ["npm", "run", "start"]

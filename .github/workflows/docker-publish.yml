@@ -3,18 +3,43 @@ name: Build and publish
 on:
   push:
     branches:
-      - "main" # Running this workflow only for develop branch
+      - "main"
 
 jobs:
-  build-and-publish-head:
+  build-and-publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-      - uses: actions/checkout@v2.5.0 # Checking out the repo
+      - uses: actions/checkout@v3
 
-      - name: Build and publish "head" Docker image
+      - name: Clean dependency cache
+        run: |
+          echo "Removing any lockfiles to ensure fresh installation"
+          rm -f package-lock.json pnpm-lock.yaml yarn.lock bun.lockb
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies and build locally first
+        run: |
+          bun install
+          bun run build || echo "Local build failed, but continuing to Docker build"
+
+      - name: Build and publish Docker image
         uses: VaultVulp/gp-docker-action@1.6.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }} # Provide GITHUB_TOKEN to login into the GitHub Packages
-          image-name: Search # Provide Docker image name
-          image-tag: head # Provide Docker image tag
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          image-name: Search
+          image-tag: latest
+          dockerfile: Dockerfile
