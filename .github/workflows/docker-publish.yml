@@ -22,7 +22,7 @@ jobs:
         uses: VaultVulp/gp-docker-action@1.6.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          image-name: vuudra-search # Your image name
+          image-name: Search # Your image name
           image-tag: latest # Will be latest for main branch
           dockerfile: Dockerfile # Your Dockerfile name
           custom-args: --platform=linux/amd64 # Specify platform
@@ -33,7 +33,7 @@ jobs:
         uses: VaultVulp/gp-docker-action@1.6.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          image-name: vuudra-search
+          image-name: Search
           extract-git-tag: true # Will use the git tag as the docker tag
           dockerfile: Dockerfile
           custom-args: --platform=linux/amd64
