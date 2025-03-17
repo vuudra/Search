@@ -1,0 +1,39 @@
+name: Build and Publish Docker Image
+
+on:
+  push:
+    branches:
+      - main # or your default branch name
+    tags:
+      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build and publish Docker image
+        uses: VaultVulp/gp-docker-action@1.6.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          image-name: vuudra-search # Your image name
+          image-tag: latest # Will be latest for main branch
+          dockerfile: Dockerfile # Your Dockerfile name
+          custom-args: --platform=linux/amd64 # Specify platform
+
+      # If this is a version tag, also create a version-specific tag
+      - name: Build and publish version tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: VaultVulp/gp-docker-action@1.6.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          image-name: vuudra-search
+          extract-git-tag: true # Will use the git tag as the docker tag
+          dockerfile: Dockerfile
+          custom-args: --platform=linux/amd64
