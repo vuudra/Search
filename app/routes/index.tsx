@@ -22,15 +22,36 @@ function searchIt(search: string) {
 
   let clean = search.replace(/!\S+\s*/i, "").trim();
 
+  // Try to decode any URL-encoded characters first
+  try {
+    clean = decodeURIComponent(clean);
+  } catch (e) {
+    // If decoding fails, use the original string
+  }
+
   let searchUrl = selectedBang?.u?.replace(
     "{{{s}}}",
-    encodeURIComponent(clean).replace(/%20/g, "+").replace(/%2F/g, "/")
+    encodeURIComponent(clean)
+      .replace(/%20/g, "+")
+      .replace(/%2F/g, "/")
+      .replace(/%2B/g, " ")
   );
 
   if (selectedBang && searchUrl) {
     window.location.href = searchUrl;
   } else {
-    window.location.href = defaultBang?.u ? defaultBang.u.replace("{{{s}}}", encodeURIComponent(clean)) : "https://www.google.com/search?q=" + encodeURIComponent(clean);
+    // Apply the same encoding logic to the default search
+    window.location.href = defaultBang?.u 
+      ? defaultBang.u.replace("{{{s}}}", 
+          encodeURIComponent(clean)
+            .replace(/%20/g, "+")
+            .replace(/%2F/g, "/")
+            .replace(/%2B/g, " "))
+      : "https://www.google.com/search?q=" + 
+          encodeURIComponent(clean)
+            .replace(/%20/g, "+")
+            .replace(/%2F/g, "/")
+            .replace(/%2B/g, " ");
   }
 }
 
