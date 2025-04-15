@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { bangs } from "../util/bangs";
 import SearchIcon from "../util/searchIcon.svg";
@@ -9,11 +9,6 @@ const validateSearch = z.object({
 });
 
 function searchIt(search: string) {
-  // Only execute in browser environment
-  if (typeof window === 'undefined') {
-    return null; 
-  }
-
   let defaultBang = bangs.find((b) => b.t === "g");
 
   let match = search.match(/!(\S+)/i);
@@ -38,38 +33,39 @@ function searchIt(search: string) {
   );
 
   if (selectedBang && searchUrl) {
-    window.location.href = searchUrl;
+    throw redirect({
+      href: searchUrl
+    })
   } else {
     // Apply the same encoding logic to the default search
-    window.location.href = defaultBang?.u 
-      ? defaultBang.u.replace("{{{s}}}", 
+    throw redirect({
+      href: defaultBang?.u 
+        ? defaultBang.u.replace("{{{s}}}", 
           encodeURIComponent(clean)
             .replace(/%20/g, "+")
             .replace(/%2F/g, "/")
             .replace(/%2B/g, " "))
       : "https://www.google.com/search?q=" + 
           encodeURIComponent(clean)
-            .replace(/%20/g, "+")
-            .replace(/%2F/g, "/")
-            .replace(/%2B/g, " ");
+          .replace(/%20/g, "+")
+          .replace(/%2F/g, "/") 
+          .replace(/%2B/g, " ")
+    })
   }
 }
 
 export const Route = createFileRoute("/")({
   validateSearch: validateSearch,
   component: Home,
+  beforeLoad: async ({ search }) => {
+    if (search.q) {
+      searchIt(search.q);
+    }
+  },
 });
 
 function Home() {
   const [text, setText] = useState("");
-  const { q } = Route.useSearch();
-  
-  useEffect(() => {
-    if (q) {
-      setText(q);
-      searchIt(q);
-    }
-  }, [q]);
 
   function searchSubmit() {
     if (!text.trim()) return;
